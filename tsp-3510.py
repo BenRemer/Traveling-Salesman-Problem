@@ -1,17 +1,11 @@
 import sys
 
 
-def main():
-	file = sys.argv[1]
-	points = readFile(file)
-	for point in range(1,len(points)):
-		print(point, ':' , points[point])
 
-
-
-def readFile(file):
+def read_file(file):
+	""" Makes a dictionary, goes line by line and add them to the dictionary as tuple of (x,y)"""
 	points = {} # Make dictionary
-	f = open(file, "r") # OPen file
+	f = open(file, "r") # Open file
 	for line in f:
 		line = line.strip('\n') # Strip off new line character
 		split = line.split(" ", 3) # Split into three parts
@@ -20,6 +14,13 @@ def readFile(file):
 	f.close()
 	return points
 
+def main():
+	input_file = sys.argv[1]
+	output_file = sys.argv[2]
+	time = sys.argv[3]
+	points = read_file(input_file)
+	for point in range(1,len(points)):
+		print(point, ':' , points[point])
 
 if __name__ == "__main__":
     main()
