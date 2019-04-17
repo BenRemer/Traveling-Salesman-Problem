@@ -1,5 +1,4 @@
 import numpy as np
-import pandas
 import operator
 import random
 import sys
@@ -33,16 +32,24 @@ def rank_routes(population):
 # Selects a population of routes and saves selected indexes routes 
 def mate(ranked_population, save_size,  population):
     selected = []
-    data_frame = pandas.DataFrame(np.array(ranked_population), columns = ["Index", "Fitness"]) # Two-dimensional size-mutable with labeled axes (rows and columns)
-    data_frame['cum_sum'] = data_frame.Fitness.cumsum()
-    data_frame['percentage'] = (data_frame.cum_sum * 100) / data_frame.Fitness.sum()
-    # print(data_frame)
+    array = np.array(ranked_population)
+    # print(array)
+    cumulative_sum = []
+    cumulative_percent = []
+    fitness_sum = 0
+    for i in range(len(ranked_population)):
+        cumulative_sum.append(ranked_population[i][1] + fitness_sum)
+        fitness_sum += ranked_population[i][1]
+    # print(cumulative_sum)
+    for i in range(len(ranked_population)):
+        cumulative_percent.append((cumulative_sum[i] * 100) / fitness_sum)
+    # print(cumulative_percent)
     for i in range(save_size): # Save the top 'save_size' contenders
         selected.append(ranked_population[i][0])
-    for i in range((len(ranked_population) - save_size)):
+    for i in range(len(ranked_population) - save_size):
         random_pick = random.random() * 100
         for i in range(len(ranked_population)):
-            if random_pick <= data_frame.iat[i, 3]:
+            if random_pick <= cumulative_percent[i]:
                 selected.append(ranked_population[i][0])
                 break
     # print(select)
@@ -86,7 +93,8 @@ def breed_pop(pool, save_size):
 
 # Randomly 'mutates' a child by swapping random locations
 def mutate(child, mutation_rate):
-    for i in range(len(child)):
+    route_size = len(child)
+    for i in range(route_size):
         if (random.random() < mutation_rate):
             j = int(random.random() * len(child))
             city1 = child[i]
@@ -98,7 +106,8 @@ def mutate(child, mutation_rate):
 # Runs mutate function over entire population
 def mutate_pop(population, mutation_rate):
     mutated = []
-    for i in range(len(population)):
+    route_size = len(population)
+    for i in range(route_size):
         child = mutate(population[i], mutation_rate)
         mutated.append(child)
     return mutated
@@ -146,7 +155,6 @@ def main():
         f.write(str(city))
         f.write(' ')
     f.write(str(rout[0]))
-    print(rout)
 
 if __name__ == "__main__":
     main()
